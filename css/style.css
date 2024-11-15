@@ -1,4 +1,105 @@
-h1{
-  border-color: #d3e644;
-  border-style: dashed;
+html, body {
+  margin: 0;
+}
+
+html {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  height: 100%;
+}
+
+body {
+  overflow: hidden;
+  height: inherit;
+}
+
+h1 {
+  font-size: 2rem;
+  letter-spacing: -1px;
+  position: absolute;
+  margin: 0;
+  top: -4px;
+  right: 5px;
+
+  color: transparent;
+  text-shadow: 0 0 4px white; 
+}
+
+#score {
+  position: absolute;
+  margin: 0;
+  top: 35px;
+  right: 5px;
+  color: #aaa;
+}
+
+div {
+  max-width: 500px;
+  margin: auto;
+}
+
+#difficulty {
+  display: flex;
+}
+
+button {
+  border-width: 2px;
+  border-radius: 10px;
+  flex-grow: 1;
+  margin: 10px;
+  height: 40px;
+  font-size: 20px;
+  font-weight: bold;
+  min-width: 150px 
+}
+
+#easy {
+  color: green;
+}
+
+#easy:hover {
+  background-color: greenyellow;
+  color: black;
+}
+
+#medium {
+  color: orange;
+}
+
+#medium:hover {
+  background-color: orange;
+  color: black;
+}
+
+#hard {
+  color: red;
+}
+
+#hard:hover {
+  background-color: red;
+  color: black;
+}
+
+#control button {
+  color: gray;
+}
+
+#control button:hover {
+  background-color: gray;
+  color: black;
+}
+
+#start {
+  min-width: 300px;
+  font-size: 25px;
+  color: magenta;
+}
+
+#start:hover {
+  background-color: magenta;
+  color: black;
+}
+
+#disclaimer {
+  font-style: italic;
+  font-size: small;
 }
