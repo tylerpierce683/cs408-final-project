@@ -1,7 +1,15 @@
 // set up canvas
 import { AppGlobals } from "./config.js";
 
-print("difficulty: " + AppGlobals.keyControl);
+const storedGlobals = localStorage.getItem('AppGlobals');
+if (storedGlobals) {
+  Object.assign(AppGlobals, JSON.parse(storedGlobals));
+}
+
+console.log("difficulty: " + AppGlobals.keyControl);
+console.log("mouse: " + AppGlobals.mouseControl);
+console.log("keyboard: " + AppGlobals.keyControl);
+
 var canvas = document.querySelector("canvas");
 var scoreLabel = document.getElementById('score');
 var ctx;
@@ -46,7 +54,7 @@ class Shape {
 
 class EvilCircle extends Shape {
   constructor(x, y) {
-    print("difficulty: " + AppGlobals.difficulty);
+    console.log("difficulty: " + AppGlobals.difficulty);
     switch (AppGlobals.difficulty) {
       case "easy":
         super(x, y, AppGlobals.EASY_VELOCITY, AppGlobals.EASY_VELOCITY);

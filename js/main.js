@@ -51,6 +51,7 @@ startButton.addEventListener('click', function() {
     //splashScreen.style.display = 'none';
     //title.hidden = false;
     //scoreLabel.hidden = false;
+    localStorage.setItem('AppGlobals', JSON.stringify(AppGlobals));
     window.location.href = "html/game.html";
   }
 });
