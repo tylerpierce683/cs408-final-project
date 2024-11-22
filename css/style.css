@@ -33,12 +33,8 @@ h1 {
 }
 
 div {
-  max-width: 500px;
+  max-width: 600px;
   margin: auto;
-}
-
-#difficulty {
-  display: flex;
 }
 
 button {
@@ -49,11 +45,33 @@ button {
   height: 40px;
   font-size: 20px;
   font-weight: bold;
-  min-width: 150px 
+  min-width: 150px;
+  background-color: white;
 }
 
+#rainbow {
+  /* color: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet); */
+}
+
+#go-to-menu {
+  color: magenta;
+  background-color: white;
+}
+
+#go-to-menu:hover {
+  background-color: magenta;
+  color: black;
+}
+
+/* Game Modes */
+#game-mode button {
+  color: blue;
+}
+
+/* Difficulty */
 #easy {
-  color: green;
+  color: white;
+  background-color: green;
 }
 
 #easy:hover {
@@ -79,6 +97,7 @@ button {
   color: black;
 }
 
+/* Controls */
 #control button {
   color: gray;
 }
@@ -88,6 +107,7 @@ button {
   color: black;
 }
 
+/* Misc */
 #start {
   min-width: 300px;
   font-size: 25px;

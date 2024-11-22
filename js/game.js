@@ -17,7 +17,7 @@ var width;
 var height;
 const balls = [];
 var won = false;
-var numBalls = 0;
+var numCurrentBalls = 0;
 var evilCircle;
 
 ctx = canvas.getContext("2d");
@@ -38,7 +38,7 @@ function randomRGB() {
 }
 
 function updateScore() {
-  scoreLabel.innerHTML = `Ball count: ${numBalls}`;
+  scoreLabel.innerHTML = `Ball count: ${numCurrentBalls}`;
 }
 
 class Shape {
@@ -164,7 +164,7 @@ class EvilCircle extends Shape {
 
         if (distance < this.size + ball.size) {
           ball.exists = false;
-          numBalls--;
+          numCurrentBalls--;
           updateScore();
         }
       }
@@ -242,13 +242,13 @@ function loop() {
 
   requestAnimationFrame(loop);
 
-  if (numBalls == 0 && !won) {
+  if (numCurrentBalls == 0 && !won) {
     alert("Congratulations! You won! Close this dialogue and refresh the page to play again!");
     won = true;
   }
 }
 
-while (balls.length < 25) {
+while (balls.length < AppGlobals.numBalls) {
   const size = random(10, 20);
   const ball = new Ball(
   // ball position always drawn at least one ball width
@@ -262,7 +262,7 @@ while (balls.length < 25) {
   );
 
   balls.push(ball);
-  numBalls++;
+  numCurrentBalls++;
   updateScore();
 }
   
