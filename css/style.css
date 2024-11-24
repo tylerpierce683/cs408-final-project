@@ -32,6 +32,14 @@ h1 {
   color: #aaa;
 }
 
+#time {
+  position: absolute;
+  margin: 0;
+  top: 60px;
+  right: 5px;
+  color: #aaa;
+}
+
 div {
   max-width: 600px;
   margin: auto;
@@ -119,7 +127,10 @@ button {
   color: black;
 }
 
-#disclaimer {
-  font-style: italic;
-  font-size: small;
+#game-end {
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  height: 80%;
 }

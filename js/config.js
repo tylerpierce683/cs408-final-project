@@ -3,6 +3,8 @@ export var AppGlobals = {
   competitionMode: false,
   extremeMode: false,
 
+  numBalls: 1,
+
   mouseControl: false,
   keyControl: false,
   difficulty: "easy",
