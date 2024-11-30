@@ -169,7 +169,8 @@ thirtyBalls.addEventListener('click', function() {
 mouseButton.addEventListener('click', function() {
   // Update Values
   AppGlobals.mouseControl = true;
-  AppGlobals.keyControl = false;
+  AppGlobals.keyControl = false;   
+  AppGlobals.extremeCountdown = AppGlobals.EXTREME_MOUSE_TIMER;
 
   // Update Styles
   unselectButtons(controlButtons);
@@ -189,6 +190,7 @@ keyButton.addEventListener('click', function() {
   // Update Values
   AppGlobals.keyControl = true;
   AppGlobals.mouseControl = false;
+  AppGlobals.extremeCountdown = AppGlobals.EXTREME_KEYBOARD_TIMER;
 
   // Update Styles
   unselectButtons(controlButtons);

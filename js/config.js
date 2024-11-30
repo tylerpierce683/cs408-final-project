@@ -7,6 +7,11 @@ export var AppGlobals = {
 
   mouseControl: false,
   keyControl: false,
+
+  extremeCountdown: 0,
+  EXTREME_MOUSE_TIMER: 10,
+  EXTREME_KEYBOARD_TIMER: 15,
+
   difficulty: "easy",
 
   EASY_VELOCITY: 50,

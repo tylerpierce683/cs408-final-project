@@ -6,10 +6,6 @@ if (storedGlobals) {
   Object.assign(AppGlobals, JSON.parse(storedGlobals));
 }
 
-console.log("difficulty: " + AppGlobals.keyControl);
-console.log("mouse: " + AppGlobals.mouseControl);
-console.log("keyboard: " + AppGlobals.keyControl);
-
 var canvas = document.querySelector("canvas");
 var timeLabel = document.getElementById("time");
 var scoreLabel = document.getElementById('score');
@@ -22,9 +18,11 @@ var won = false;
 var numCurrentBalls = 0;
 var evilCircle;
 
-if (AppGlobals.competitionMode) {
+if (AppGlobals.competitionMode || AppGlobals.extremeMode) {
   timeLabel.removeAttribute("hidden");
 }
+
+console.log("Extreme countdown: " + AppGlobals.extremeCountdown);
 
 ctx = canvas.getContext("2d");
 
@@ -251,8 +249,8 @@ function loop() {
 
   requestAnimationFrame(loop);
 
+  // Won in level mode
   if (numCurrentBalls == 0 && !won && AppGlobals.levelMode) {
-    // alert("Congratulations! You won! Close this dialogue and refresh the page to play again!");
     won = true;
     document.getElementsByTagName("canvas")[0].style.display = "none";
     document.getElementById("title").style.display = "none";
@@ -272,13 +270,46 @@ function loop() {
         window.location.reload();
       }
     }, 1000);
-  } else if (numCurrentBalls == 0 && !won && AppGlobals.competitionMode) {
+  } 
+  // Won in competition mode
+  else if (numCurrentBalls == 0 && !won && AppGlobals.competitionMode) {
     won = true;
     document.getElementsByTagName("canvas")[0].style.display = "none";
     document.getElementById("title").style.display = "none";
     document.getElementById("score").style.display = "none";
     timeLabel.style.display = "none";
     gameEndMessage.innerHTML = "Congratulations! Your time was " + time + " seconds! <br> Refresh the page to play again!";
+    document.getElementById("game-end").removeAttribute("hidden");
+  } 
+  // Won in extreme mode
+  else if (numCurrentBalls == 0 && !won && AppGlobals.extremeMode) {
+    won = true;
+    document.getElementsByTagName("canvas")[0].style.display = "none";
+    document.getElementById("title").style.display = "none";
+    document.getElementById("score").style.display = "none";
+    timeLabel.style.display = "none";
+    var countdownTimer = 3;
+    var countdown = setInterval(function() {
+      countdownTimer--;
+      if (countdownTimer == 0) {
+        clearInterval(countdown);
+        AppGlobals.numBalls += 2;
+        AppGlobals.extremeCountdown -= 0.5;
+        console.log("got here " + AppGlobals.extremeCountdown)
+        localStorage.setItem('AppGlobals', JSON.stringify(AppGlobals));
+        document.getElementById("title").style.display = "block";
+        document.getElementById("score").style.display = "block";
+        window.location.reload();
+      }
+    }, 1000);
+  }
+  // Lost in extreme mode
+  else if (AppGlobals.extremeMode && numCurrentBalls > 0 && gameTimer <= 0) {
+    document.getElementsByTagName("canvas")[0].style.display = "none";
+    document.getElementById("title").style.display = "none";
+    document.getElementById("score").style.display = "none";
+    timeLabel.style.display = "none";
+    gameEndMessage.innerHTML = "You ran out of time! <br> Level " + (AppGlobals.numBalls + 1)/2 + " reached!";
     document.getElementById("game-end").removeAttribute("hidden");
   }
 }
@@ -311,7 +342,20 @@ if (AppGlobals.competitionMode) {
     gameTimer += 0.01;
     timeLabel.innerHTML = `Time: ${gameTimer.toFixed(2)}`;
     if (numCurrentBalls == 0) {
-      gameEndMessage.innerHTML = "Congatulations! You ate " + AppGlobals.numBalls + " balls in " + gameTimer.toFixed(2) + " seconds!";
+      gameEndMessage.innerHTML = "Congratulations! You ate " + AppGlobals.numBalls + " balls in " + gameTimer.toFixed(2) + " seconds!";
+      clearInterval(countdown);
+    }
+  }, 10);  
+}
+
+if (AppGlobals.extremeMode) {
+  var gameTimer = AppGlobals.extremeCountdown;
+  console.log("gameTimer: " + gameTimer);
+  var countdown = setInterval(function() {
+    gameTimer -= 0.01;
+    timeLabel.innerHTML = `Time: ${gameTimer.toFixed(2)}`;
+    if (numCurrentBalls == 0) {
+      gameEndMessage.innerHTML = "Congratulations! You ate " + AppGlobals.numBalls + " balls with " + gameTimer.toFixed(2) + " seconds left! <br> The next level will start with " + (AppGlobals.numBalls + 2) + " balls and you'll have " + (AppGlobals.extremeCountdown - 0.5) + " seconds";
       clearInterval(countdown);
     }
   }, 10);  
