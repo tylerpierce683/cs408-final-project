@@ -18,6 +18,9 @@ var won = false;
 var numCurrentBalls = 0;
 var evilCircle;
 
+let lambda = document.getElementById("data-table");
+let xhr;
+
 if (AppGlobals.competitionMode || AppGlobals.extremeMode) {
   timeLabel.removeAttribute("hidden");
 }
@@ -279,7 +282,41 @@ function loop() {
     document.getElementById("score").style.display = "none";
     timeLabel.style.display = "none";
     gameEndMessage.innerHTML = "Congratulations! Your time was " + time + " seconds! <br> Refresh the page to play again!";
+    console.log(time);
     document.getElementById("game-end").removeAttribute("hidden");
+
+    //Scoreboard
+    xhr = new XMLHttpRequest();
+    xhr.open("PUT", "https://ti2yb2ww1f.execute-api.us-east-2.amazonaws.com/scores/competition");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    console.log("id: " + Date.now().toString());
+    xhr.send(JSON.stringify({
+      "id": Date.now().toString(),
+      "gamemode": "competition",
+      "numBalls": AppGlobals.numBalls.toString(),
+      "time": gameTimer.toFixed(2)
+    }));
+    xhr = new XMLHttpRequest();
+    xhr.addEventListener("load", function () {
+      lambda.innerHTML = "<tr><th>ID</th><th>Number of Balls</th><th>Time</th></tr>";
+      if (xhr.status !== 200) {
+        lambda.innerHTML += "<tr><td>Error loading data</td></tr>";
+      } else if (xhr.response === "[]") {
+        lambda.innerHTML += "<tr><td>No data found</td><td>No data found</td><td>No data found</td><td>No data found</td></tr>";
+      } else {
+        var dataList = JSON.parse(xhr.response);
+        for (var i = 0; i < dataList.length; i++) {
+          var object = dataList[i];
+          var tableRow = "<tr><td>" + object.id + "</td>";
+          console.log("scoreID: " + object.id);
+          tableRow += "<td>" + object.numBalls + "</td>";
+          tableRow += "<td>" + object.time + "</td>";
+          lambda.innerHTML += tableRow;
+        }
+      }
+    });
+    xhr.open("GET", "https://ti2yb2ww1f.execute-api.us-east-2.amazonaws.com/scores");
+    xhr.send();
   } 
   // Won in extreme mode
   else if (numCurrentBalls == 0 && !won && AppGlobals.extremeMode) {
