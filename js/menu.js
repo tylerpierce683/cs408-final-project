@@ -41,7 +41,12 @@ const startButton = document.getElementById('start');
 
 // Game Variables
 
-import { AppGlobals } from './config.js';
+import { AppGlobals } from "./config.js";
+
+const storedGlobals = localStorage.getItem('AppGlobals');
+if (storedGlobals) {
+  Object.assign(AppGlobals, JSON.parse(storedGlobals));
+}
 
 function unselectButtons(buttons) {
   for (let i = 0; i < buttons.length; i++) {
@@ -56,6 +61,7 @@ levelButton.addEventListener('click', function() {
   AppGlobals.levelMode = true;
   AppGlobals.competitionMode = false;
   AppGlobals.extremeMode = false;
+  AppGlobals.numBalls = 1;
 
   // Update Styles
   unselectButtons(modeButtons);
@@ -96,6 +102,7 @@ extremeButton.addEventListener('click', function() {
   AppGlobals.extremeMode = true;
   AppGlobals.levelMode = false;
   AppGlobals.competitionMode = false;
+  AppGlobals.numBalls = 1;
 
   // Update Styles
   unselectButtons(modeButtons);

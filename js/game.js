@@ -15,6 +15,7 @@ var width;
 var height;
 const balls = [];
 var won = false;
+var lost = false;
 var numCurrentBalls = 0;
 var evilCircle;
 
@@ -259,6 +260,7 @@ function loop() {
     document.getElementById("title").style.display = "none";
     document.getElementById("score").style.display = "none";
     document.getElementById("time").style.display = "none";
+    lambda.style.display = "none";
     var countdownTimer = 3;
     gameEndMessage.innerHTML = "Level complete! <br> Starting next level in " + countdownTimer + " seconds with " + (AppGlobals.numBalls + 2) + " balls!";
     var countdown = setInterval(function() {
@@ -281,37 +283,56 @@ function loop() {
     document.getElementById("title").style.display = "none";
     document.getElementById("score").style.display = "none";
     timeLabel.style.display = "none";
-    gameEndMessage.innerHTML = "Congratulations! Your time was " + time + " seconds! <br> Refresh the page to play again!";
     console.log(time);
     document.getElementById("game-end").removeAttribute("hidden");
 
-    //Scoreboard
+    // Scoreboard
+
+    // send score to AWS
     xhr = new XMLHttpRequest();
     xhr.open("PUT", "https://ti2yb2ww1f.execute-api.us-east-2.amazonaws.com/scores/competition");
     xhr.setRequestHeader("Content-Type", "application/json");
-    console.log("id: " + Date.now().toString());
+    var id = Date.now().toString();
+    console.log("username: " + AppGlobals.username);
     xhr.send(JSON.stringify({
-      "id": Date.now().toString(),
+      "id": id,
+      "username": AppGlobals.username,
       "gamemode": "competition",
       "numBalls": AppGlobals.numBalls.toString(),
       "time": gameTimer.toFixed(2)
     }));
+
+    // load scores from AWS
     xhr = new XMLHttpRequest();
     xhr.addEventListener("load", function () {
-      lambda.innerHTML = "<tr><th>ID</th><th>Number of Balls</th><th>Time</th></tr>";
+      lambda.innerHTML = "<tr><th>User</th><th>Number of Balls</th><th>Time</th></tr>";
       if (xhr.status !== 200) {
         lambda.innerHTML += "<tr><td>Error loading data</td></tr>";
       } else if (xhr.response === "[]") {
         lambda.innerHTML += "<tr><td>No data found</td><td>No data found</td><td>No data found</td><td>No data found</td></tr>";
       } else {
         var dataList = JSON.parse(xhr.response);
-        for (var i = 0; i < dataList.length; i++) {
-          var object = dataList[i];
-          var tableRow = "<tr><td>" + object.id + "</td>";
-          console.log("scoreID: " + object.id);
-          tableRow += "<td>" + object.numBalls + "</td>";
-          tableRow += "<td>" + object.time + "</td>";
-          lambda.innerHTML += tableRow;
+        dataList.push({"numBalls":AppGlobals.numBalls,"time":gameTimer.toFixed(2),"gamemode":"competition","username":AppGlobals.username,"id":id});
+        dataList.sort(function(a, b) {
+          return parseFloat(a.time) - parseFloat(b.time)
+        });
+        var i = 0;
+        while (lambda.rows.length < 8 && i < dataList.length - 1) {
+          if (i < dataList.length) var object = dataList[i];
+          if (object.gamemode === "competition" && object.numBalls == AppGlobals.numBalls) {
+            if (object.id != id) {
+              var tableRow = "<tr><td>" + object.username + "</td>";
+              tableRow += "<td>" + object.numBalls + "</td>";
+              tableRow += "<td>" + object.time + "</td>";
+              lambda.innerHTML += tableRow;
+            } else {
+              var tableRow = "<tr style='background-color: #FFD700;'><td>" + object.username + "</td>";
+              tableRow += "<td>" + object.numBalls + "</td>";
+              tableRow += "<td>" + object.time + "</td>";
+              lambda.innerHTML += tableRow;
+            }
+          }
+          i++;
         }
       }
     });
@@ -324,6 +345,7 @@ function loop() {
     document.getElementsByTagName("canvas")[0].style.display = "none";
     document.getElementById("title").style.display = "none";
     document.getElementById("score").style.display = "none";
+    lambda.style.display = "none";
     timeLabel.style.display = "none";
     var countdownTimer = 3;
     var countdown = setInterval(function() {
@@ -341,13 +363,68 @@ function loop() {
     }, 1000);
   }
   // Lost in extreme mode
-  else if (AppGlobals.extremeMode && numCurrentBalls > 0 && gameTimer <= 0) {
+  else if (!lost && AppGlobals.extremeMode && numCurrentBalls > 0 && gameTimer <= 0) {
+    lost = true;
     document.getElementsByTagName("canvas")[0].style.display = "none";
     document.getElementById("title").style.display = "none";
     document.getElementById("score").style.display = "none";
     timeLabel.style.display = "none";
+    lambda.style.display = "incline";
     gameEndMessage.innerHTML = "You ran out of time! <br> Level " + (AppGlobals.numBalls + 1)/2 + " reached!";
     document.getElementById("game-end").removeAttribute("hidden");
+
+    // Scoreboard
+
+    // send score to AWS
+    xhr = new XMLHttpRequest();
+    xhr.open("PUT", "https://ti2yb2ww1f.execute-api.us-east-2.amazonaws.com/scores/extreme");
+    xhr.setRequestHeader("Content-Type", "application/json");
+    var id = Date.now().toString();
+    console.log("username: " + AppGlobals.username);
+    console.log("sent level: " + ((AppGlobals.numBalls + 1) / 2).toString())
+    xhr.send(JSON.stringify({
+      "id": id,
+      "username": AppGlobals.username,
+      "gamemode": "extreme",
+      "level": ((AppGlobals.numBalls + 1) / 2).toString(),
+    }));
+
+    // load scores from AWS
+    xhr = new XMLHttpRequest();
+    xhr.addEventListener("load", function () {
+      lambda.innerHTML = "<tr><th>User</th><th>Level Reached</th>/tr>";
+      if (xhr.status !== 200) {
+        lambda.innerHTML += "<tr><td>Error loading data</td></tr>";
+      } else if (xhr.response === "[]") {
+        lambda.innerHTML += "<tr><td>No data found</td><td>No data found</td></tr>";
+      } else {
+        var dataList = JSON.parse(xhr.response);
+        console.log(((AppGlobals.numBalls + 1) / 2).toString());
+        dataList.push({"level":((AppGlobals.numBalls + 1) / 2).toString(),"gamemode":"extreme","username":AppGlobals.username,"id":id});
+        dataList.sort(function(a, b) {
+          return parseFloat(b.level) - parseFloat(a.level)
+        });
+        var i = 0;
+        while (lambda.rows.length < 8 && i < dataList.length - 1) {
+          var object = dataList[i];
+          if (object.gamemode === "extreme") {
+            if (object.id != id) {
+              var tableRow = "<tr><td>" + object.username + "</td>";
+              tableRow += "<td>" + object.level + "</td></tr>";
+              lambda.innerHTML += tableRow;
+              console.log("object.level: " + object.level);
+            } else {
+              var tableRow = "<tr style='background-color: #FFD700;'><td>" + object.username + "</td>";
+              tableRow += "<td>" + object.level + "</td></tr>";
+              lambda.innerHTML += tableRow;
+            }
+          }
+          i++;
+        }
+      }
+    });
+    xhr.open("GET", "https://ti2yb2ww1f.execute-api.us-east-2.amazonaws.com/scores");
+    xhr.send();
   }
 }
 
@@ -379,7 +456,7 @@ if (AppGlobals.competitionMode) {
     gameTimer += 0.01;
     timeLabel.innerHTML = `Time: ${gameTimer.toFixed(2)}`;
     if (numCurrentBalls == 0) {
-      gameEndMessage.innerHTML = "Congratulations! You ate " + AppGlobals.numBalls + " balls in " + gameTimer.toFixed(2) + " seconds!";
+      gameEndMessage.innerHTML = "Congratulations! You ate <span id=numBalls>" + AppGlobals.numBalls + "</span> balls in <span id=completeTime>" + gameTimer.toFixed(2) + "</span> seconds!";
       clearInterval(countdown);
     }
   }, 10);  

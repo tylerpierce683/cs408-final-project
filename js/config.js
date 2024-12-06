@@ -1,4 +1,6 @@
 export var AppGlobals = {
+  username: "",
+
   levelMode: false,
   competitionMode: false,
   extremeMode: false,

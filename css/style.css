@@ -127,10 +127,40 @@ button {
   color: black;
 }
 
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 5px;
+}
+
+table {
+  margin: auto;
+  justify-content: center;
+  width: 40%;
+}
+
+td {
+  text-align: center;
+}
+
+#numBalls {
+  color: blue;
+  font-weight: bold;
+}
+
+#completeTime {
+  color: green;
+  font-weight: bold;
+}
+
 #game-end {
   text-align: center;
   align-items: center;
   justify-content: center;
   display: flex;
-  /* height: 80%; */
+  height: 25%;
+}
+
+#beat-level-msg {
+  display: inline;
 }
