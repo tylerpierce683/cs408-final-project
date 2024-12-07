@@ -63,6 +63,7 @@ class Shape {
   }
 }
 
+// Main Character Class
 class EvilCircle extends Shape {
   constructor(x, y) {
     console.log("difficulty: " + AppGlobals.difficulty);
@@ -219,6 +220,7 @@ class Ball extends Shape {
     this.y += this.velY;
   }
 
+  // Checks to see if balls are touching
   collisionDetect() {
     for (const ball of balls) {
       if (!(this === ball) && this.exists) {
@@ -234,6 +236,7 @@ class Ball extends Shape {
   }
 }
 
+// Main game loop
 function loop() {
 
   ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
@@ -288,12 +291,13 @@ function loop() {
 
     // Scoreboard
 
-    // send score to AWS
+    // send score to AWS for competition
     xhr = new XMLHttpRequest();
     xhr.open("PUT", "https://ti2yb2ww1f.execute-api.us-east-2.amazonaws.com/scores/competition");
     xhr.setRequestHeader("Content-Type", "application/json");
     var id = Date.now().toString();
     console.log("username: " + AppGlobals.username);
+    // Score data
     xhr.send(JSON.stringify({
       "id": id,
       "username": AppGlobals.username,
@@ -302,7 +306,7 @@ function loop() {
       "time": gameTimer.toFixed(2)
     }));
 
-    // load scores from AWS
+    // load scores from AWS for competition
     xhr = new XMLHttpRequest();
     xhr.addEventListener("load", function () {
       lambda.innerHTML = "<tr><th>User</th><th>Number of Balls</th><th>Time</th></tr>";
@@ -320,12 +324,12 @@ function loop() {
         while (lambda.rows.length < 8 && i < dataList.length - 1) {
           if (i < dataList.length) var object = dataList[i];
           if (object.gamemode === "competition" && object.numBalls == AppGlobals.numBalls) {
-            if (object.id != id) {
+            if (object.id != id) { // if it's not our recent play
               var tableRow = "<tr><td>" + object.username + "</td>";
               tableRow += "<td>" + object.numBalls + "</td>";
               tableRow += "<td>" + object.time + "</td>";
               lambda.innerHTML += tableRow;
-            } else {
+            } else { // if it's our recent play
               var tableRow = "<tr style='background-color: #FFD700;'><td>" + object.username + "</td>";
               tableRow += "<td>" + object.numBalls + "</td>";
               tableRow += "<td>" + object.time + "</td>";
@@ -375,7 +379,7 @@ function loop() {
 
     // Scoreboard
 
-    // send score to AWS
+    // send score to AWS for extreme
     xhr = new XMLHttpRequest();
     xhr.open("PUT", "https://ti2yb2ww1f.execute-api.us-east-2.amazonaws.com/scores/extreme");
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -389,7 +393,7 @@ function loop() {
       "level": ((AppGlobals.numBalls + 1) / 2).toString(),
     }));
 
-    // load scores from AWS
+    // load scores from AWS for extreme
     xhr = new XMLHttpRequest();
     xhr.addEventListener("load", function () {
       lambda.innerHTML = "<tr><th>User</th><th>Level Reached</th>/tr>";
@@ -408,12 +412,12 @@ function loop() {
         while (lambda.rows.length < 8 && i < dataList.length - 1) {
           var object = dataList[i];
           if (object.gamemode === "extreme") {
-            if (object.id != id) {
+            if (object.id != id) { // if it's not our recent play
               var tableRow = "<tr><td>" + object.username + "</td>";
               tableRow += "<td>" + object.level + "</td></tr>";
               lambda.innerHTML += tableRow;
               console.log("object.level: " + object.level);
-            } else {
+            } else { // if it's our recent play
               var tableRow = "<tr style='background-color: #FFD700;'><td>" + object.username + "</td>";
               tableRow += "<td>" + object.level + "</td></tr>";
               lambda.innerHTML += tableRow;
@@ -428,6 +432,7 @@ function loop() {
   }
 }
 
+// function to add balls to the array and game
 function addBalls(numberOfBalls) {
   while (balls.length < numberOfBalls) {
     const size = random(10, 20);
@@ -450,6 +455,7 @@ function addBalls(numberOfBalls) {
 
 addBalls(AppGlobals.numBalls);
 
+// Competition mode timer
 if (AppGlobals.competitionMode) {
   var gameTimer = 0;
   var countdown = setInterval(function() {
@@ -462,6 +468,7 @@ if (AppGlobals.competitionMode) {
   }, 10);  
 }
 
+// Extreme mode timer
 if (AppGlobals.extremeMode) {
   var gameTimer = AppGlobals.extremeCountdown;
   console.log("gameTimer: " + gameTimer);

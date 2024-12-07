@@ -1,11 +1,15 @@
-import {sayHello} from '../js/main.js';
+import {addBalls, EvilCircle, Ball, randomRGB, balls} from '../js/game.js';
 
-QUnit.module('hello', function() {
-
-    QUnit.test('make sure the hello function says hello', function(assert) {
-        var result = sayHello();
-        assert.equal(result, 'hello');
+QUnit.module("Game Logic Tests", function() {
+    QUnit.test("addBalls correctly populates the balls array", function(assert) {
+      const initialCount = balls.length;
+      const numBallsToAdd = 5;
+      addBalls(numBallsToAdd);
+  
+      assert.strictEqual(balls.length, initialCount + numBallsToAdd, 
+        "The balls array should increase by the number of added balls.");
+      assert.ok(balls.every(ball => ball instanceof Ball), 
+        "All new elements in the balls array should be instances of the Ball class.");
     });
-
-
+  
 });
