@@ -178,6 +178,7 @@ mouseButton.addEventListener('click', function() {
   AppGlobals.mouseControl = true;
   AppGlobals.keyControl = false;   
   AppGlobals.extremeCountdown = AppGlobals.EXTREME_MOUSE_TIMER;
+  AppGlobals.difficulty = "easy";
 
   // Update Styles
   unselectButtons(controlButtons);

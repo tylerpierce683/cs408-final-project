@@ -112,31 +112,11 @@ class EvilCircle extends Shape {
         }
       });
     } else if (AppGlobals.mouseControl) {
-      switch (AppGlobals.difficulty) {
-        case "easy":
-          window.addEventListener('mousemove', (e) => {
-            this.x = e.clientX;
-            this.y = e.clientY;
-          });
-          break;
-        case "medium":
-        case "hard":
-          window.addEventListener('mousemove', (e) => {
-            if (this.x < e.clientX) {
-              this.x += this.velX;
-            } else if (this.x > e.clientX) {
-              this.x -= this.velX;
-            } else if (this.y < e.clientY) {
-              this.y += this.velY;
-            } else if (this.y > e.clientY) {
-              this.y -= this.velY;
-            }
-          });
-          break;
-        default:
-          console.log("error");
-      }
-      
+      this.size = AppGlobals.EASY_SIZE;
+        window.addEventListener('mousemove', (e) => {
+          this.x = e.clientX;
+          this.y = e.clientY;
+        });
     }
   }
 
@@ -396,7 +376,7 @@ function loop() {
     // load scores from AWS for extreme
     xhr = new XMLHttpRequest();
     xhr.addEventListener("load", function () {
-      lambda.innerHTML = "<tr><th>User</th><th>Level Reached</th>/tr>";
+      lambda.innerHTML = "<tr><th>User</th><th>Level Reached</th></tr>";
       if (xhr.status !== 200) {
         lambda.innerHTML += "<tr><td>Error loading data</td></tr>";
       } else if (xhr.response === "[]") {
@@ -405,8 +385,14 @@ function loop() {
         var dataList = JSON.parse(xhr.response);
         console.log(((AppGlobals.numBalls + 1) / 2).toString());
         dataList.push({"level":((AppGlobals.numBalls + 1) / 2).toString(),"gamemode":"extreme","username":AppGlobals.username,"id":id});
+        console.log("id: " + id);
         dataList.sort(function(a, b) {
           return parseFloat(b.level) - parseFloat(a.level)
+        });
+        dataList.forEach(element => {
+          console.log("element.level: " + element.level);
+          console.log("element.username: " + element.username);
+          console.log("element.id: " + element.id);
         });
         var i = 0;
         while (lambda.rows.length < 8 && i < dataList.length - 1) {
@@ -416,10 +402,11 @@ function loop() {
               var tableRow = "<tr><td>" + object.username + "</td>";
               tableRow += "<td>" + object.level + "</td></tr>";
               lambda.innerHTML += tableRow;
-              console.log("object.level: " + object.level);
+              console.log("object.level from not id: " + object.level);
             } else { // if it's our recent play
               var tableRow = "<tr style='background-color: #FFD700;'><td>" + object.username + "</td>";
               tableRow += "<td>" + object.level + "</td></tr>";
+              console.log("tableRow: " + tableRow)
               lambda.innerHTML += tableRow;
             }
           }
